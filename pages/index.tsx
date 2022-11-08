@@ -1,6 +1,28 @@
 import Head from 'next/head';
+import { useQuery, gql } from '@apollo/client';
+
+const TODOS = gql`
+  query GetTodos {
+    getTodos {
+      id
+      createdAt
+      userId
+      title
+      completed
+      updatedAt
+      scheduled
+      scheduledDate
+    }
+  }
+`;
 
 export default function Home() {
+  const { loading, error, data } = useQuery(TODOS);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (error) return `Error! ${error.message}`;
+
   return (
     <div>
       <Head>
@@ -15,6 +37,7 @@ export default function Home() {
             Welcome to{' '}
             <span className="text-[#0070f3]">Yet Another Todo App</span>
           </h1>
+          <div>{JSON.stringify(data)}</div>
         </div>
       </main>
     </div>
