@@ -10,6 +10,9 @@ const nextConfig = {
     return config;
   },
   swcMinify: true,
+  images: {
+    domains: ['lh3.googleusercontent.com'],
+  },
 };
 
 module.exports = nextConfig;

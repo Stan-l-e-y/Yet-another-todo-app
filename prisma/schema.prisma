@@ -1,39 +1,48 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id                String  @id
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+generator client {
+  provider        = "prisma-client-js"
+}
 
-  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
-  @@index([userId], map: "Account_userId_fkey")
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id           String   @id
-  sessionToken String   @unique(map: "Session_sessionToken_key")
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-  @@index([userId], map: "Session_userId_fkey")
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  todos         Todo[]
 }
 
 model Todo {
@@ -42,29 +51,20 @@ model Todo {
   title         String    @db.VarChar(255)
   completed     Boolean   @default(false)
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime
+  updatedAt     DateTime  @updatedAt
   scheduled     Boolean   @default(false)
-  scheduledDate DateTime?
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Todo_userId_fkey")
+  scheduledDate DateTime? 
 
-  @@index([userId], map: "Todo_userId_fkey")
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model User {
-  id            String    @id
-  name          String?
-  email         String?   @unique(map: "User_email_key")
-  emailVerified DateTime?
-  image         String?
-  account       Account[]
-  session       Session[]
-  todo          Todo[]
-}
-
-model Verificationtoken {
+model VerificationToken {
   identifier String
-  token      String   @unique(map: "VerificationToken_token_key")
+  token      String   @unique
   expires    DateTime
 
-  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
+  @@unique([identifier, token])
 }
+
+// Todo
+//
