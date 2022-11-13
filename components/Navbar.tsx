@@ -5,6 +5,8 @@ import Image from 'next/image';
 export default function Navbar() {
   const { data: session, status } = useSession();
 
+  if (status === 'loading') return <p>Loading...</p>;
+
   return (
     <>
       <div className="flex justify-end pr-20 pt-20">

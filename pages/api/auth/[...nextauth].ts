@@ -14,21 +14,6 @@ export const authOptions = {
     }),
   ],
   callbacks: {
-    // session: async ({ session, user }) => {
-    //   return {
-    //     ...session,
-    //     user: {
-    //       id: user.id,
-    //       name: user.name,
-    //       email: user.email,
-    //       image: user.image,
-    //     },
-    //   };
-    // },
-    // async session(session: Session, user: User) {
-    //   session.user = user;
-    //   return session;
-    // },
     async session({ session, user }) {
       session.user = user;
       return session;
